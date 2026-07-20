@@ -1051,6 +1051,16 @@ textarea.form-control{
 
 }
 
+@media (max-width:992px){
+
+    .dashboard-content{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
 @media (max-width:768px){
 
     .wrapper{
@@ -1102,6 +1112,362 @@ textarea.form-control{
         gap:16px;
 
     }
+
+}
+/* ==========================================================
+   HEADER ACTIONS
+========================================================== */
+
+.header-actions{
+
+    display:flex;
+
+    gap:12px;
+
+    align-items:center;
+
+}
+
+.dashboard{
+
+    width:100%;
+
+}
+/* ==========================================================
+   SUMMARY CARD ICON
+========================================================== */
+
+.stat-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.stat-title i{
+
+    font-size:18px;
+
+    color:var(--primary);
+
+}
+
+.stat-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.stat-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:120px;
+
+    height:120px;
+
+    right:-40px;
+
+    top:-40px;
+
+    border-radius:50%;
+
+    background:rgba(37,99,235,.06);
+
+}
+/* ==========================================================
+   DASHBOARD CONTENT
+========================================================== */
+
+.dashboard-content{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:24px;
+
+    margin-top:30px;
+
+}
+
+/* ==========================================================
+   CARD HEADER
+========================================================== */
+
+.card-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.card-subtitle{
+
+    margin-top:6px;
+
+    font-size:13px;
+
+    color:var(--text-light);
+
+}
+
+/* ==========================================================
+   CHART
+========================================================== */
+
+.chart-card{
+
+    min-height:420px;
+
+}
+
+.chart-container{
+
+    position:relative;
+
+    width:100%;
+
+    height:320px;
+
+}
+
+.chart-container canvas{
+
+    width:100% !important;
+
+    height:100% !important;
+
+}
+/* ==========================================================
+   UPCOMING JOBS
+========================================================== */
+
+.upcoming-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+.upcoming-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:14px;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    transition:.25s;
+
+    background:#fff;
+
+}
+
+.upcoming-item:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:var(--shadow);
+
+}
+
+.upcoming-date{
+
+    width:62px;
+
+    height:62px;
+
+    border-radius:14px;
+
+    background:var(--primary);
+
+    color:#fff;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-shrink:0;
+
+}
+
+.upcoming-date .day{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    line-height:1;
+
+}
+
+.upcoming-date .month{
+
+    font-size:11px;
+
+    letter-spacing:1px;
+
+}
+
+.upcoming-info{
+
+    flex:1;
+
+}
+
+.job-title{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:var(--text);
+
+}
+
+.job-detail{
+
+    margin-top:4px;
+
+    font-size:13px;
+
+    color:var(--text-light);
+
+}
+/* ==========================================================
+   TABLE ENHANCEMENT
+========================================================== */
+
+.table tbody tr{
+
+    transition:all .25s;
+
+}
+
+.table tbody tr:hover{
+
+    background:#F8FAFC;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+/* ==========================================================
+   STATUS BADGE
+========================================================== */
+
+.badge{
+
+    min-width:90px;
+
+    text-align:center;
+
+}
+
+/* ==========================================================
+   CARD SPACING
+========================================================== */
+
+.card + .card{
+
+    margin-top:24px;
+
+}
+/* ==========================================================
+   QUICK ACTIONS
+========================================================== */
+
+.quick-actions{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:18px;
+
+}
+
+.quick-action{
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:24px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:14px;
+
+}
+
+.quick-action:hover{
+
+    transform:translateY(-4px);
+
+    border-color:var(--primary);
+
+    box-shadow:var(--shadow);
+
+}
+
+.quick-action i{
+
+    font-size:34px;
+
+    color:var(--primary);
+
+}
+
+.quick-action span{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:var(--text);
 
 }
 </style>

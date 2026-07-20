@@ -2,113 +2,151 @@
 
 /* ==========================================================
    FOROAOMOE PHOTOGRAPHER CRM
-   Version 0.1
+   script.html
+
+   Version : 1.0.0
+   Commit 004
 ========================================================== */
-
-let dashboardChart = null;
-let statusChart = null;
-
-let bookings = [];
-let customers = [];
-let dashboard = {};
 
 /* ==========================================================
-   DOM READY
+   GLOBAL STATE
 ========================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+let dashboardData = {};
 
-    initialize();
+let bookingData = [];
 
-});
+let incomeChart = null;
+
+let currentPage = "dashboard";
 
 /* ==========================================================
    INITIALIZE
 ========================================================== */
 
-function initialize() {
+window.addEventListener("load", initApp);
+
+function initApp() {
+
+    console.log("CRM Initialized");
 
     showLoading();
 
-    showDashboard();
+    bindEvents();
 
-    loadDashboard();
+bindModalEvents();
 
-    loadBookings();
-
-    hideLoading();
+loadDashboard();
 
 }
 
 /* ==========================================================
-   PAGE
+   BIND EVENTS
 ========================================================== */
 
-function hideAllPages() {
+function bindEvents(){
+
+    // Sidebar
+document
+    .getElementById("btnNewBooking")
+    ?.addEventListener(
+        "click",
+        openBookingModal
+    );
+    document
+        .getElementById("menu-dashboard")
+        ?.addEventListener(
+            "click",
+            function(e){
+
+                e.preventDefault();
+
+                showDashboard();
+
+            }
+        );
 
     document
-        .querySelectorAll(".page")
-        .forEach(page => page.classList.add("hidden"));
+        .getElementById("menu-booking")
+        ?.addEventListener(
+            "click",
+            function(e){
 
-}
+                e.preventDefault();
 
-function showDashboard() {
+                showBooking();
 
-    hideAllPages();
+            }
+        );
 
-    document
-        .getElementById("dashboardPage")
-        .classList.remove("hidden");
-
-}
-
-function showBooking() {
-
-    hideAllPages();
+    // Dashboard
 
     document
-        .getElementById("bookingPage")
-        .classList.remove("hidden");
+        .getElementById("btnNewBooking")
+        ?.addEventListener(
+            "click",
+            showBooking
+        );
 
-}
-
-function showCalendar() {
-
-    Swal.fire(
-        "Coming Soon",
-        "Calendar Module",
-        "info"
+    document
+    .getElementById("btnRefreshChart")
+    ?.addEventListener(
+        "click",
+        refreshChart
     );
 
 }
 
-function showIncome() {
+/* ==========================================================
+   LOAD DASHBOARD
+========================================================== */
 
-    Swal.fire(
-        "Coming Soon",
-        "Income Module",
-        "info"
-    );
+function loadDashboard(){
+
+    google.script.run
+
+        .withSuccessHandler(function(res){
+
+            dashboardData = res || {};
+
+renderDashboard(dashboardData);
+
+hideLoading();
+
+        })
+
+        .withFailureHandler(function(err){
+
+            console.error(err);
+
+            hideLoading();
+
+        })
+
+        .getDashboardSummary();
 
 }
-
 /* ==========================================================
    LOADING
 ========================================================== */
 
-function showLoading() {
+function showLoading(){
 
-    document
-        .getElementById("loading")
-        .style.display = "flex";
+    const loading = document.getElementById("loading");
+
+    if(!loading) return;
+
+    loading.style.display = "flex";
 
 }
 
-function hideLoading() {
+function hideLoading(){
 
-    document
-        .getElementById("loading")
-        .style.display = "none";
+    const loading = document.getElementById("loading");
+
+    if(!loading) return;
+
+    loading.style.display = "none";
 
 }
 
@@ -116,160 +154,199 @@ function hideLoading() {
    TOAST
 ========================================================== */
 
-function showToast(message = "Success") {
+function showToast(message,type="success"){
 
     const toast = document.getElementById("toast");
 
-    toast.innerHTML = message;
+    if(!toast) return;
+
+    toast.textContent = message;
 
     toast.style.display = "block";
 
-    setTimeout(() => {
+    switch(type){
+
+        case "success":
+
+            toast.style.background = "#22C55E";
+
+            break;
+
+        case "error":
+
+            toast.style.background = "#EF4444";
+
+            break;
+
+        case "warning":
+
+            toast.style.background = "#F59E0B";
+
+            break;
+
+        default:
+
+            toast.style.background = "#111827";
+
+    }
+
+    setTimeout(function(){
 
         toast.style.display = "none";
 
-    }, 2500);
+    },3000);
 
 }
 
 /* ==========================================================
-   MODAL
+   ERROR HANDLER
 ========================================================== */
 
-function openModal(title, html = "") {
+function handleError(error){
 
-    document.getElementById("modalTitle").innerHTML = title;
+    console.error(error);
 
-    document.getElementById("modalBody").innerHTML = html;
+    hideLoading();
 
-    document.getElementById("modalOverlay").style.display = "flex";
+    showToast(
+
+        "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+
+        "error"
+
+    );
+
+}
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+function showDashboard() {
+
+    currentPage = "dashboard";
+
+    // แสดง Dashboard
+    document
+        .getElementById("dashboardPage")
+        ?.classList.remove("hidden");
+
+    // ซ่อน Booking
+    document
+        .getElementById("bookingPage")
+        ?.classList.add("hidden");
+
+    // Active Menu
+    setActiveMenu("menu-dashboard");
 
 }
 
-function closeModal() {
+function showBooking() {
 
-    document.getElementById("modalOverlay").style.display = "none";
+    currentPage = "booking";
+
+    // ซ่อน Dashboard
+    document
+        .getElementById("dashboardPage")
+        ?.classList.add("hidden");
+
+    // แสดง Booking
+    document
+        .getElementById("bookingPage")
+        ?.classList.remove("hidden");
+
+    // Active Menu
+    setActiveMenu("menu-booking");
 
 }
 
 /* ==========================================================
-   FORMAT
+   ACTIVE MENU
 ========================================================== */
 
-function money(value) {
+function setActiveMenu(menuId){
 
-    return Number(value || 0)
-        .toLocaleString("th-TH");
+    document
+        .querySelectorAll(".menu a")
+        .forEach(function(item){
 
-}
+            item.classList.remove("active");
 
-function formatDate(value) {
+        });
 
-    if (!value) return "-";
-
-    return new Date(value)
-        .toLocaleDateString("th-TH");
+    document
+        .getElementById(menuId)
+        ?.classList.add("active");
 
 }
 
 /* ==========================================================
-   HELPER
+   PAGE TITLE
 ========================================================== */
 
-function clearForm() {
+function getCurrentPage(){
 
-    const form = document.getElementById("bookingForm");
-
-    if (form) {
-
-        form.reset();
-
-    }
+    return currentPage;
 
 }
 /* ==========================================================
    DASHBOARD
 ========================================================== */
 
-function loadDashboard() {
-
-    showLoading();
-
-    google.script.run
-        .withSuccessHandler(renderDashboard)
-        .withFailureHandler(function(error){
-
-            hideLoading();
-
-            Swal.fire(
-                "Error",
-                error.message || "Cannot load dashboard.",
-                "error"
-            );
-
-        })
-        .getDashboard();
-
-}
-
-/* ==========================================================
-   RENDER DASHBOARD
-========================================================== */
-
 function renderDashboard(data){
 
-    dashboard = data || {};
+    if(!data){
 
-    document.getElementById("totalBooking").innerHTML =
-        dashboard.totalBooking || 0;
+        return;
 
-    document.getElementById("totalIncome").innerHTML =
-        "฿" + money(dashboard.totalIncome);
+    }
 
-    document.getElementById("totalDeposit").innerHTML =
-        "฿" + money(dashboard.totalDeposit);
+    updateSummaryCards(data);
 
-    document.getElementById("totalBalance").innerHTML =
-        "฿" + money(dashboard.totalBalance);
+    loadIncomeChart(data.monthlyIncome || []);
 
-    renderIncomeChart(
-    dashboard.monthlyIncome || {}
-);
+    loadRecentBookings(data.recentBookings || []);
 
-renderStatusChart(
-    dashboard.bookingStatus || {}
-);
-
-renderRecentBookings(
-    dashboard.recentBookings || []
-);
-
-renderUpcomingBookings(
-    dashboard.recentBookings || []
-);
-
-hideLoading();
+    loadUpcomingJobs(data.upcomingJobs || []);
 
 }
 
 /* ==========================================================
-   RECENT BOOKING
+   SUMMARY
 ========================================================== */
 
-function renderRecentBookings(rows){
+function updateSummaryCards(data){
+
+    document.getElementById("totalBookings").textContent =
+        data.bookings ?? 0;
+
+    document.getElementById("totalCustomers").textContent =
+        data.customers ?? 0;
+
+    document.getElementById("totalIncome").textContent =
+        formatCurrency(data.income ?? 0);
+
+    document.getElementById("pendingBookings").textContent =
+        data.pending ?? 0;
+
+}
+
+/* ==========================================================
+   RECENT BOOKINGS
+========================================================== */
+
+function loadRecentBookings(list){
 
     const tbody =
         document.getElementById("recentBookingTable");
 
-    if(!rows.length){
+    if(!tbody) return;
+
+    if(!list.length){
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="6"
-                    class="text-center">
-
-                    No booking found
-
+                <td colspan="5" class="text-center">
+                    ไม่มีข้อมูล
                 </td>
             </tr>
         `;
@@ -278,83 +355,349 @@ function renderRecentBookings(rows){
 
     }
 
-    let html = "";
+    tbody.innerHTML = "";
 
-    rows.forEach(row=>{
+    list.forEach(item=>{
 
-        html += `
+        tbody.innerHTML += `
+            <tr>
+
+                <td>${item.customer}</td>
+
+                <td>${item.package}</td>
+
+                <td>${item.date}</td>
+
+                <td>${formatCurrency(item.price)}</td>
+
+                <td>
+                    <span class="badge badge-success">
+                        ${item.status}
+                    </span>
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+}
+
+/* ==========================================================
+   UPCOMING JOBS
+========================================================== */
+
+function loadUpcomingJobs(list){
+
+    const container =
+        document.getElementById("upcomingList");
+
+    if(!container) return;
+
+    if(!list.length){
+
+        container.innerHTML = `
+            <div class="empty">
+
+                ไม่มีงานที่กำลังจะมาถึง
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML = "";
+
+    list.forEach(item=>{
+
+        container.innerHTML += `
+
+        <div class="upcoming-item">
+
+            <div class="upcoming-date">
+
+                <span class="day">
+
+                    ${item.day}
+
+                </span>
+
+                <span class="month">
+
+                    ${item.month}
+
+                </span>
+
+            </div>
+
+            <div class="upcoming-info">
+
+                <div class="job-title">
+
+                    ${item.title}
+
+                </div>
+
+                <div class="job-detail">
+
+                    ${item.location}
+
+                </div>
+
+            </div>
+
+            <span class="badge badge-info">
+
+                ${item.status}
+
+            </span>
+
+        </div>
+
+        `;
+
+    });
+
+}
+/* ==========================================================
+   BOOKING
+========================================================== */
+
+function loadBookings() {
+
+    showLoading();
+
+    google.script.run
+
+        .withSuccessHandler(function(result){
+
+            bookingData = result || [];
+
+            renderBookingTable();
+
+            hideLoading();
+
+        })
+
+        .withFailureHandler(handleError)
+
+        .getBookings();
+
+}
+
+/* ==========================================================
+   RENDER BOOKING TABLE
+========================================================== */
+
+function renderBookingTable(){
+
+    const tbody = document.getElementById("bookingTableBody");
+
+    if(!tbody) return;
+
+    if(bookingData.length === 0){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center">
+                    ไม่มีข้อมูลการจอง
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+    tbody.innerHTML = bookingData.map(item => `
+
         <tr>
 
-            <td>${row.bookingId}</td>
+            <td>${item.bookingId}</td>
 
-            <td>${row.customer}</td>
+            <td>${item.customer}</td>
 
-            <td>${formatDate(row.bookingDate)}</td>
+            <td>${item.package}</td>
 
-            <td>${row.packageName}</td>
+            <td>${item.date}</td>
 
-            <td>฿${money(row.price)}</td>
+            <td>${formatCurrency(item.price)}</td>
 
             <td>
 
                 <span class="badge badge-info">
 
-                    ${row.status}
+                    ${item.status}
 
                 </span>
 
             </td>
 
+            <td>
+
+                <button
+                    class="btn btn-light"
+                    onclick="editBooking('${item.bookingId}')">
+
+                    <i class="bi bi-pencil"></i>
+
+                </button>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="removeBooking('${item.bookingId}')">
+
+                    <i class="bi bi-trash"></i>
+
+                </button>
+
+            </td>
+
         </tr>
-        `;
+
+    `).join("");
+
+}
+
+/* ==========================================================
+   NEW BOOKING
+========================================================== */
+
+function newBooking(){
+
+    showBooking();
+
+    showToast("เปิดหน้าสร้าง Booking");
+
+}
+
+/* ==========================================================
+   EDIT BOOKING
+========================================================== */
+
+function editBooking(id){
+
+    console.log("Edit :",id);
+
+    showToast("กำลังแก้ไข Booking");
+
+}
+
+/* ==========================================================
+   DELETE BOOKING
+========================================================== */
+
+function removeBooking(id){
+
+    Swal.fire({
+
+        title:"ยืนยันการลบ",
+
+        text:"ต้องการลบรายการนี้หรือไม่",
+
+        icon:"warning",
+
+        showCancelButton:true,
+
+        confirmButtonText:"ลบ",
+
+        cancelButtonText:"ยกเลิก"
+
+    }).then(result=>{
+
+        if(!result.isConfirmed){
+
+            return;
+
+        }
+
+        showLoading();
+
+        google.script.run
+
+            .withSuccessHandler(function(){
+
+                showToast("ลบข้อมูลสำเร็จ");
+
+                loadBookings();
+
+            })
+
+            .withFailureHandler(handleError)
+
+            .deleteBooking(id);
 
     });
 
-    tbody.innerHTML = html;
-
 }
 /* ==========================================================
-   MONTHLY INCOME CHART
+   CHART
 ========================================================== */
 
-function renderIncomeChart(monthlyIncome) {
-
-    const labels = [
-        "Jan","Feb","Mar","Apr","May","Jun",
-        "Jul","Aug","Sep","Oct","Nov","Dec"
-    ];
-
-    const values = labels.map(month => monthlyIncome[month] || 0);
+function loadIncomeChart(monthlyIncome = []) {
 
     const canvas = document.getElementById("incomeChart");
 
     if (!canvas) return;
 
-    if (dashboardChart) {
-        dashboardChart.destroy();
+    // ลบ Chart เดิม
+    if (incomeChart) {
+        incomeChart.destroy();
     }
 
-    dashboardChart = new Chart(canvas, {
+    // ถ้ายังไม่มีข้อมูล ให้ใช้ข้อมูลตัวอย่าง
+    if (!monthlyIncome.length) {
+
+        monthlyIncome = [
+            { month: "Jan", income: 12000 },
+            { month: "Feb", income: 18000 },
+            { month: "Mar", income: 15000 },
+            { month: "Apr", income: 25000 },
+            { month: "May", income: 32000 },
+            { month: "Jun", income: 28000 },
+            { month: "Jul", income: 35000 },
+            { month: "Aug", income: 30000 },
+            { month: "Sep", income: 22000 },
+            { month: "Oct", income: 27000 },
+            { month: "Nov", income: 40000 },
+            { month: "Dec", income: 52000 }
+        ];
+
+    }
+
+    incomeChart = new Chart(canvas, {
 
         type: "bar",
 
         data: {
 
-            labels: labels,
+            labels: monthlyIncome.map(item => item.month),
 
-            datasets: [{
+            datasets: [
 
-                label: "Income",
+                {
 
-                data: values,
+                    label: "Income",
 
-                borderWidth: 1,
+                    data: monthlyIncome.map(item => item.income),
 
-                borderRadius: 8,
+                    borderWidth: 0,
 
-                backgroundColor: "#2563EB"
+                    borderRadius: 8,
 
-            }]
+                    backgroundColor: "#2563EB",
+
+                    hoverBackgroundColor: "#1D4ED8"
+
+                }
+
+            ]
 
         },
 
@@ -382,9 +725,9 @@ function renderIncomeChart(monthlyIncome) {
 
                     ticks: {
 
-                        callback: function(value){
+                        callback(value) {
 
-                            return "฿" + money(value);
+                            return "฿" + value.toLocaleString();
 
                         }
 
@@ -401,221 +744,239 @@ function renderIncomeChart(monthlyIncome) {
 }
 
 /* ==========================================================
-   BOOKING STATUS CHART
+   REFRESH CHART
 ========================================================== */
 
-function renderStatusChart(statusData) {
+function refreshChart(){
 
-    const labels = Object.keys(statusData);
+    loadIncomeChart(
+        dashboardData.monthlyIncome || []
+    );
 
-    const values = Object.values(statusData);
+}
+/* ==========================================================
+   MODAL
+========================================================== */
 
-    const canvas = document.getElementById("statusChart");
+function openModal(title, content = "") {
 
-    if (!canvas) return;
+    const overlay = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
 
-    if (statusChart) {
-        statusChart.destroy();
-    }
+    if (!overlay || !modalTitle || !modalBody) return;
 
-    statusChart = new Chart(canvas, {
+    modalTitle.textContent = title;
 
-        type: "doughnut",
+    modalBody.innerHTML = content;
 
-        data: {
+    overlay.style.display = "flex";
 
-            labels: labels,
+}
 
-            datasets: [{
+function closeModal() {
 
-                data: values,
+    const overlay = document.getElementById("modalOverlay");
 
-                backgroundColor: [
+    if (!overlay) return;
 
-                    "#3B82F6",
-                    "#22C55E",
-                    "#F59E0B",
-                    "#EF4444"
+    overlay.style.display = "none";
 
-                ],
+}
 
-                borderWidth: 0
+/* ==========================================================
+   MODAL EVENTS
+========================================================== */
 
-            }]
+function bindModalEvents() {
 
-        },
+    document
+        .getElementById("modalClose")
+        ?.addEventListener(
+            "click",
+            closeModal
+        );
 
-        options: {
+    document
+        .getElementById("modalCancel")
+        ?.addEventListener(
+            "click",
+            closeModal
+        );
 
-            responsive: true,
+    document
+        .getElementById("modalOverlay")
+        ?.addEventListener(
+            "click",
+            function (e) {
 
-            maintainAspectRatio: false,
+                if (e.target.id === "modalOverlay") {
 
-            cutout: "70%",
-
-            plugins: {
-
-                legend: {
-
-                    position: "bottom"
+                    closeModal();
 
                 }
 
             }
-
-        }
-
-    });
+        );
 
 }
+
 /* ==========================================================
-   UPCOMING BOOKING
+   BOOKING MODAL
 ========================================================== */
 
-function renderUpcomingBookings(rows) {
+function openBookingModal() {
 
-    const container = document.getElementById("upcomingBooking");
+    openModal(
 
-    if (!container) return;
+        "New Booking",
 
-    if (!rows || rows.length === 0) {
+        `
+        <div class="text-center">
 
-        container.innerHTML = `
-            <div class="empty">
+            <i class="bi bi-calendar-plus"
+               style="font-size:48px;color:#2563EB;"></i>
 
-                <i class="bi bi-calendar-event"
-                   style="font-size:60px;"></i>
+            <h3 class="mt-20">
 
-                <h3>ไม่มีคิวงาน</h3>
+                Booking Form
 
-                <p>เมื่อมีการจอง ระบบจะแสดงคิวงานที่กำลังจะมาถึง</p>
+            </h3>
 
-            </div>
-        `;
+            <p class="mt-10">
 
-        return;
+                ส่วนของแบบฟอร์ม Booking
+                จะถูกสร้างใน Commit 005
 
-    }
-
-    const today = new Date();
-
-    const upcoming = rows
-        .filter(row => {
-
-            if (!row.bookingDate) return false;
-
-            return new Date(row.bookingDate) >= today;
-
-        })
-        .sort((a,b)=>{
-
-            return new Date(a.bookingDate) -
-                   new Date(b.bookingDate);
-
-        })
-        .slice(0,5);
-
-    if(upcoming.length===0){
-
-        container.innerHTML=`
-            <div class="empty">
-
-                <h3>ไม่มีคิวงานที่กำลังจะมาถึง</h3>
-
-            </div>
-        `;
-
-        return;
-
-    }
-
-    let html="";
-
-    upcoming.forEach(row=>{
-
-        html+=`
-
-        <div class="card mb-20">
-
-            <div class="flex-between">
-
-                <div>
-
-                    <strong>${row.customer}</strong>
-
-                    <div class="page-subtitle">
-
-                        ${formatDate(row.bookingDate)}
-
-                    </div>
-
-                </div>
-
-                <div>
-
-                    ${statusBadge(row.status)}
-
-                </div>
-
-            </div>
+            </p>
 
         </div>
+        `
 
-        `;
+    );
+
+}
+/* ==========================================================
+   HELPER
+========================================================== */
+
+/**
+ * Format Currency
+ */
+function formatCurrency(value){
+
+    const number = Number(value) || 0;
+
+    return "฿" + number.toLocaleString("th-TH",{
+
+        minimumFractionDigits:0,
+
+        maximumFractionDigits:0
 
     });
 
-    container.innerHTML=html;
+}
+
+/**
+ * Format Date
+ */
+function formatDate(date){
+
+    if(!date) return "-";
+
+    const d = new Date(date);
+
+    return d.toLocaleDateString("th-TH",{
+
+        day:"2-digit",
+
+        month:"short",
+
+        year:"numeric"
+
+    });
 
 }
 
-/* ==========================================================
-   STATUS BADGE
-========================================================== */
+/**
+ * Escape HTML
+ */
+function escapeHtml(text){
 
-function statusBadge(status){
+    if(text == null) return "";
 
-    switch(status){
+    return String(text)
 
-        case "Confirmed":
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
-            return '<span class="badge badge-success">Confirmed</span>';
+}
 
-        case "Completed":
+/**
+ * Reset Form
+ */
+function resetForm(formId){
 
-            return '<span class="badge badge-info">Completed</span>';
+    const form = document.getElementById(formId);
 
-        case "Cancelled":
+    if(form){
 
-            return '<span class="badge badge-danger">Cancelled</span>';
-
-        default:
-
-            return '<span class="badge badge-warning">Pending</span>';
+        form.reset();
 
     }
 
 }
 
-/* ==========================================================
-   REFRESH DASHBOARD
-========================================================== */
+/**
+ * Debounce
+ */
+function debounce(callback,delay=300){
 
-function refreshDashboard(){
+    let timer;
 
-    loadDashboard();
+    return function(){
+
+        clearTimeout(timer);
+
+        const args = arguments;
+
+        timer = setTimeout(()=>{
+
+            callback.apply(this,args);
+
+        },delay);
+
+    };
 
 }
 
-/* ==========================================================
-   AUTO REFRESH AFTER SAVE
-========================================================== */
+/**
+ * Sleep
+ */
+function sleep(ms){
 
-function dashboardUpdated(){
+    return new Promise(resolve=>{
 
-    loadDashboard();
+        setTimeout(resolve,ms);
 
-    loadBookings();
+    });
 
 }
+
+/**
+ * Console Banner
+ */
+console.log(
+    "%cFOROAOMOE Photographer CRM",
+    "color:#2563EB;font-size:16px;font-weight:bold;"
+);
+
+console.log(
+    "%cVersion 1.0.0",
+    "color:#6B7280;"
+);
+
 </script>
