@@ -1,0 +1,287 @@
+<div class="page">
+
+    <!-- =======================================
+         Dashboard Header
+    ======================================== -->
+
+    <div class="flex-between mb-30">
+
+        <div>
+
+            <h1 class="page-title">
+
+                Dashboard
+
+            </h1>
+
+            <div class="page-subtitle">
+
+                Welcome to Foroaomoe Photographer CRM
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <button class="btn btn-primary"
+                    onclick="showBooking()">
+
+                <i class="bi bi-plus-circle"></i>
+
+                New Booking
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- =======================================
+         Summary
+    ======================================== -->
+
+    <div class="dashboard-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+
+                Total Booking
+
+            </div>
+
+            <div class="stat-value"
+                 id="totalBooking">
+
+                0
+
+            </div>
+
+            <div class="stat-footer">
+
+                Booking ทั้งหมด
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+
+                Total Income
+
+            </div>
+
+            <div class="stat-value"
+                 id="totalIncome">
+
+                ฿0
+
+            </div>
+
+            <div class="stat-footer">
+
+                รายรับทั้งหมด
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+
+                Deposit
+
+            </div>
+
+            <div class="stat-value"
+                 id="totalDeposit">
+
+                ฿0
+
+            </div>
+
+            <div class="stat-footer">
+
+                มัดจำที่ได้รับ
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+
+                Remaining Balance
+
+            </div>
+
+            <div class="stat-value"
+                 id="totalBalance">
+
+                ฿0
+
+            </div>
+
+            <div class="stat-footer">
+
+                ยอดคงเหลือ
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =======================================
+         Charts
+    ======================================== -->
+
+    <div class="row mt-30">
+
+        <div class="col-lg-8">
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    Monthly Income
+
+                </div>
+
+                <canvas id="incomeChart"
+                        height="120"></canvas>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    Booking Status
+
+                </div>
+
+                <canvas id="statusChart"
+                        height="220"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =======================================
+         Recent Booking
+    ======================================== -->
+
+    <div class="card mt-30">
+
+        <div class="action-bar">
+
+            <div class="card-title">
+
+                Recent Booking
+
+            </div>
+
+            <button class="btn btn-light btn-sm"
+                    onclick="showBookingList()">
+
+                View All
+
+            </button>
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Booking ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Date</th>
+
+                        <th>Package</th>
+
+                        <th>Price</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="recentBookingTable">
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="text-center">
+
+                            Loading...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- =======================================
+         Upcoming Booking
+    ======================================== -->
+
+    <div class="card mt-30">
+
+        <div class="card-title">
+
+            Upcoming Booking
+
+        </div>
+
+        <div id="upcomingBooking">
+
+            <div class="empty">
+
+                <i class="bi bi-calendar-event"
+                   style="font-size:60px;"></i>
+
+                <h3>
+
+                    ไม่มีคิวงาน
+
+                </h3>
+
+                <p>
+
+                    เมื่อมีการจอง ระบบจะแสดงคิวงานที่กำลังจะมาถึง
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,342 @@
+<div class="page hidden" id="bookingPage">
+
+    <!-- ==============================
+         Header
+    =============================== -->
+
+    <div class="flex-between mb-30">
+
+        <div>
+
+            <h1 class="page-title">
+
+                Booking Management
+
+            </h1>
+
+            <div class="page-subtitle">
+
+                Create, edit and manage your bookings
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <button class="btn btn-success"
+                    onclick="newBooking()">
+
+                <i class="bi bi-plus-circle"></i>
+
+                New Booking
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ==============================
+         Booking Form
+    =============================== -->
+
+    <div class="card">
+
+        <div class="card-title">
+
+            Booking Information
+
+        </div>
+
+        <form id="bookingForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>ประเภทงาน</label>
+
+                    <select id="type"
+                            class="form-control">
+
+                        <option value="PRE-GRADUATE">
+                            PRE-GRADUATE
+                        </option>
+
+                        <option value="GRADUATE">
+                            GRADUATE
+                        </option>
+
+                        <option value="OTHER">
+                            OTHER
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>แพ็กเกจ</label>
+
+                    <input
+                        type="text"
+                        id="package"
+                        class="form-control"
+                        placeholder="Full Day">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>ชื่อลูกค้า</label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>เบอร์โทร</label>
+
+                    <input
+                        type="text"
+                        id="phone"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>LINE</label>
+
+                    <input
+                        type="text"
+                        id="line"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Facebook</label>
+
+                    <input
+                        type="text"
+                        id="facebook"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>มหาวิทยาลัย</label>
+
+                    <input
+                        type="text"
+                        id="university"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>คณะ</label>
+
+                    <input
+                        type="text"
+                        id="faculty"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>วันที่ถ่าย</label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>เวลา</label>
+
+                    <input
+                        type="time"
+                        id="time"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>สถานที่</label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        class="form-control">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>จำนวนคน</label>
+
+                    <input
+                        type="number"
+                        id="people"
+                        class="form-control"
+                        value="1">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>ราคารวม</label>
+
+                    <input
+                        type="number"
+                        id="price"
+                        class="form-control"
+                        oninput="calculateBalance()">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>มัดจำ</label>
+
+                    <input
+                        type="number"
+                        id="deposit"
+                        class="form-control"
+                        oninput="calculateBalance()">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>ยอดคงเหลือ</label>
+
+                    <input
+                        type="number"
+                        id="balance"
+                        class="form-control"
+                        readonly>
+
+                </div>
+
+                <div class="form-group full">
+
+                    <label>หมายเหตุ</label>
+
+                    <textarea
+                        id="note"
+                        class="form-control"></textarea>
+
+                </div>
+
+            </div>
+
+            <div class="mt-20">
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="saveBooking()">
+
+                    บันทึกข้อมูล
+
+                </button>
+
+                <button
+                    type="reset"
+                    class="btn btn-light">
+
+                    ล้างข้อมูล
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- ==============================
+         Booking List
+    =============================== -->
+
+    <div class="card mt-30">
+
+        <div class="action-bar">
+
+            <div class="card-title">
+
+                Booking List
+
+            </div>
+
+            <div style="width:320px">
+
+                <input
+                    type="text"
+                    id="searchBooking"
+                    class="form-control"
+                    placeholder="ค้นหาลูกค้า...">
+
+            </div>
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>ลูกค้า</th>
+                        <th>วันที่</th>
+                        <th>ประเภท</th>
+                        <th>ราคา</th>
+                        <th>สถานะ</th>
+                        <th></th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="bookingTable">
+
+                    <tr>
+
+                        <td colspan="7"
+                            class="text-center">
+
+                            ยังไม่มีข้อมูล
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

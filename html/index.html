@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+  <base target="_top">
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1">
+
+  <title>Foroaomoe Photographer CRM</title>
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- CSS -->
+  <?!= include('style'); ?>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- ==========================
+         SIDEBAR
+    =========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>FOROAOMOE</h2>
+
+            <p>Photographer CRM</p>
+
+        </div>
+
+        <nav class="menu">
+
+            <div class="menu-title">
+
+                MAIN MENU
+
+            </div>
+
+            <ul>
+
+                <li>
+
+                    <a
+                        href="#"
+                        id="menu-dashboard"
+                        class="active"
+                        onclick="showDashboard();return false;">
+
+                        <i class="bi bi-grid-fill"></i>
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        href="#"
+                        id="menu-booking"
+                        onclick="showBooking();return false;">
+
+                        <i class="bi bi-calendar-check"></i>
+
+                        Bookings
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="bi bi-people-fill"></i>
+
+                        Customers
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        Calendar
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="bi bi-cash-stack"></i>
+
+                        Income
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="bi bi-file-earmark-pdf"></i>
+
+                        PDF
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#">
+
+                        <i class="bi bi-gear-fill"></i>
+
+                        Settings
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </aside>
+
+    <!-- ==========================
+         CONTENT
+    =========================== -->
+
+    <main class="content">
+
+        <!-- Dashboard -->
+
+        <section
+            id="dashboardSection"
+            class="page">
+
+            <?!= include('dashboard'); ?>
+
+        </section>
+
+        <!-- Booking -->
+
+        <section
+            id="bookingSection"
+            class="page hidden">
+
+            <?!= include('booking'); ?>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- Loading -->
+
+<div
+    class="loading"
+    id="loading">
+
+    <div class="spinner"></div>
+
+</div>
+
+<!-- Toast -->
+
+<div
+    class="toast"
+    id="toast">
+
+</div>
+
+<!-- Modal -->
+
+<div
+    class="modal-overlay"
+    id="modalOverlay">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div
+                class="modal-title"
+                id="modalTitle">
+
+                Modal
+
+            </div>
+
+            <button
+                class="modal-close"
+                onclick="closeModal()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+        <div
+            class="modal-body"
+            id="modalBody">
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                class="btn btn-light"
+                onclick="closeModal()">
+
+                ปิด
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript -->
+
+<?!= include('script'); ?>
+
+</body>
+
+</html>

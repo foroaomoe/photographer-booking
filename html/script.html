@@ -1,0 +1,621 @@
+<script>
+
+/* ==========================================================
+   FOROAOMOE PHOTOGRAPHER CRM
+   Version 0.1
+========================================================== */
+
+let dashboardChart = null;
+let statusChart = null;
+
+let bookings = [];
+let customers = [];
+let dashboard = {};
+
+/* ==========================================================
+   DOM READY
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initialize();
+
+});
+
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+function initialize() {
+
+    showLoading();
+
+    showDashboard();
+
+    loadDashboard();
+
+    loadBookings();
+
+    hideLoading();
+
+}
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+function hideAllPages() {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page => page.classList.add("hidden"));
+
+}
+
+function showDashboard() {
+
+    hideAllPages();
+
+    document
+        .getElementById("dashboardPage")
+        .classList.remove("hidden");
+
+}
+
+function showBooking() {
+
+    hideAllPages();
+
+    document
+        .getElementById("bookingPage")
+        .classList.remove("hidden");
+
+}
+
+function showCalendar() {
+
+    Swal.fire(
+        "Coming Soon",
+        "Calendar Module",
+        "info"
+    );
+
+}
+
+function showIncome() {
+
+    Swal.fire(
+        "Coming Soon",
+        "Income Module",
+        "info"
+    );
+
+}
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+function showLoading() {
+
+    document
+        .getElementById("loading")
+        .style.display = "flex";
+
+}
+
+function hideLoading() {
+
+    document
+        .getElementById("loading")
+        .style.display = "none";
+
+}
+
+/* ==========================================================
+   TOAST
+========================================================== */
+
+function showToast(message = "Success") {
+
+    const toast = document.getElementById("toast");
+
+    toast.innerHTML = message;
+
+    toast.style.display = "block";
+
+    setTimeout(() => {
+
+        toast.style.display = "none";
+
+    }, 2500);
+
+}
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+function openModal(title, html = "") {
+
+    document.getElementById("modalTitle").innerHTML = title;
+
+    document.getElementById("modalBody").innerHTML = html;
+
+    document.getElementById("modalOverlay").style.display = "flex";
+
+}
+
+function closeModal() {
+
+    document.getElementById("modalOverlay").style.display = "none";
+
+}
+
+/* ==========================================================
+   FORMAT
+========================================================== */
+
+function money(value) {
+
+    return Number(value || 0)
+        .toLocaleString("th-TH");
+
+}
+
+function formatDate(value) {
+
+    if (!value) return "-";
+
+    return new Date(value)
+        .toLocaleDateString("th-TH");
+
+}
+
+/* ==========================================================
+   HELPER
+========================================================== */
+
+function clearForm() {
+
+    const form = document.getElementById("bookingForm");
+
+    if (form) {
+
+        form.reset();
+
+    }
+
+}
+/* ==========================================================
+   DASHBOARD
+========================================================== */
+
+function loadDashboard() {
+
+    showLoading();
+
+    google.script.run
+        .withSuccessHandler(renderDashboard)
+        .withFailureHandler(function(error){
+
+            hideLoading();
+
+            Swal.fire(
+                "Error",
+                error.message || "Cannot load dashboard.",
+                "error"
+            );
+
+        })
+        .getDashboard();
+
+}
+
+/* ==========================================================
+   RENDER DASHBOARD
+========================================================== */
+
+function renderDashboard(data){
+
+    dashboard = data || {};
+
+    document.getElementById("totalBooking").innerHTML =
+        dashboard.totalBooking || 0;
+
+    document.getElementById("totalIncome").innerHTML =
+        "฿" + money(dashboard.totalIncome);
+
+    document.getElementById("totalDeposit").innerHTML =
+        "฿" + money(dashboard.totalDeposit);
+
+    document.getElementById("totalBalance").innerHTML =
+        "฿" + money(dashboard.totalBalance);
+
+    renderIncomeChart(
+    dashboard.monthlyIncome || {}
+);
+
+renderStatusChart(
+    dashboard.bookingStatus || {}
+);
+
+renderRecentBookings(
+    dashboard.recentBookings || []
+);
+
+renderUpcomingBookings(
+    dashboard.recentBookings || []
+);
+
+hideLoading();
+
+}
+
+/* ==========================================================
+   RECENT BOOKING
+========================================================== */
+
+function renderRecentBookings(rows){
+
+    const tbody =
+        document.getElementById("recentBookingTable");
+
+    if(!rows.length){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="text-center">
+
+                    No booking found
+
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+    let html = "";
+
+    rows.forEach(row=>{
+
+        html += `
+        <tr>
+
+            <td>${row.bookingId}</td>
+
+            <td>${row.customer}</td>
+
+            <td>${formatDate(row.bookingDate)}</td>
+
+            <td>${row.packageName}</td>
+
+            <td>฿${money(row.price)}</td>
+
+            <td>
+
+                <span class="badge badge-info">
+
+                    ${row.status}
+
+                </span>
+
+            </td>
+
+        </tr>
+        `;
+
+    });
+
+    tbody.innerHTML = html;
+
+}
+/* ==========================================================
+   MONTHLY INCOME CHART
+========================================================== */
+
+function renderIncomeChart(monthlyIncome) {
+
+    const labels = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+    const values = labels.map(month => monthlyIncome[month] || 0);
+
+    const canvas = document.getElementById("incomeChart");
+
+    if (!canvas) return;
+
+    if (dashboardChart) {
+        dashboardChart.destroy();
+    }
+
+    dashboardChart = new Chart(canvas, {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: "Income",
+
+                data: values,
+
+                borderWidth: 1,
+
+                borderRadius: 8,
+
+                backgroundColor: "#2563EB"
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+
+                    display: false
+
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        callback: function(value){
+
+                            return "฿" + money(value);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+/* ==========================================================
+   BOOKING STATUS CHART
+========================================================== */
+
+function renderStatusChart(statusData) {
+
+    const labels = Object.keys(statusData);
+
+    const values = Object.values(statusData);
+
+    const canvas = document.getElementById("statusChart");
+
+    if (!canvas) return;
+
+    if (statusChart) {
+        statusChart.destroy();
+    }
+
+    statusChart = new Chart(canvas, {
+
+        type: "doughnut",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                data: values,
+
+                backgroundColor: [
+
+                    "#3B82F6",
+                    "#22C55E",
+                    "#F59E0B",
+                    "#EF4444"
+
+                ],
+
+                borderWidth: 0
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            cutout: "70%",
+
+            plugins: {
+
+                legend: {
+
+                    position: "bottom"
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+/* ==========================================================
+   UPCOMING BOOKING
+========================================================== */
+
+function renderUpcomingBookings(rows) {
+
+    const container = document.getElementById("upcomingBooking");
+
+    if (!container) return;
+
+    if (!rows || rows.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+
+                <i class="bi bi-calendar-event"
+                   style="font-size:60px;"></i>
+
+                <h3>ไม่มีคิวงาน</h3>
+
+                <p>เมื่อมีการจอง ระบบจะแสดงคิวงานที่กำลังจะมาถึง</p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+    const today = new Date();
+
+    const upcoming = rows
+        .filter(row => {
+
+            if (!row.bookingDate) return false;
+
+            return new Date(row.bookingDate) >= today;
+
+        })
+        .sort((a,b)=>{
+
+            return new Date(a.bookingDate) -
+                   new Date(b.bookingDate);
+
+        })
+        .slice(0,5);
+
+    if(upcoming.length===0){
+
+        container.innerHTML=`
+            <div class="empty">
+
+                <h3>ไม่มีคิวงานที่กำลังจะมาถึง</h3>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+    let html="";
+
+    upcoming.forEach(row=>{
+
+        html+=`
+
+        <div class="card mb-20">
+
+            <div class="flex-between">
+
+                <div>
+
+                    <strong>${row.customer}</strong>
+
+                    <div class="page-subtitle">
+
+                        ${formatDate(row.bookingDate)}
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                    ${statusBadge(row.status)}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    container.innerHTML=html;
+
+}
+
+/* ==========================================================
+   STATUS BADGE
+========================================================== */
+
+function statusBadge(status){
+
+    switch(status){
+
+        case "Confirmed":
+
+            return '<span class="badge badge-success">Confirmed</span>';
+
+        case "Completed":
+
+            return '<span class="badge badge-info">Completed</span>';
+
+        case "Cancelled":
+
+            return '<span class="badge badge-danger">Cancelled</span>';
+
+        default:
+
+            return '<span class="badge badge-warning">Pending</span>';
+
+    }
+
+}
+
+/* ==========================================================
+   REFRESH DASHBOARD
+========================================================== */
+
+function refreshDashboard(){
+
+    loadDashboard();
+
+}
+
+/* ==========================================================
+   AUTO REFRESH AFTER SAVE
+========================================================== */
+
+function dashboardUpdated(){
+
+    loadDashboard();
+
+    loadBookings();
+
+}
+</script>
