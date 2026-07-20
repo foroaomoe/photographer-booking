@@ -7,21 +7,14 @@
 
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
 
   <title>Foroaomoe Photographer CRM</title>
 
-  <!-- Bootstrap -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-    rel="stylesheet">
-
   <!-- Bootstrap Icons -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
-    rel="stylesheet">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,7 +22,6 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- CSS -->
   <?!= include('style'); ?>
 
 </head>
@@ -64,11 +56,9 @@
 
                 <li>
 
-                    <a
-                        href="#"
-                        id="menu-dashboard"
-                        class="active"
-                        onclick="showDashboard();return false;">
+                    <a href="#"
+                       class="active"
+                       id="menu-dashboard">
 
                         <i class="bi bi-grid-fill"></i>
 
@@ -80,10 +70,8 @@
 
                 <li>
 
-                    <a
-                        href="#"
-                        id="menu-booking"
-                        onclick="showBooking();return false;">
+                    <a href="#"
+                       id="menu-booking">
 
                         <i class="bi bi-calendar-check"></i>
 
@@ -157,6 +145,14 @@
 
         </nav>
 
+        <div class="sidebar-footer">
+
+            <strong>Foroaomoe</strong>
+
+            Photographer CRM v1.0
+
+        </div>
+
     </aside>
 
     <!-- ==========================
@@ -165,21 +161,15 @@
 
     <main class="content">
 
-        <!-- Dashboard -->
-
-        <section
-            id="dashboardSection"
-            class="page">
+        <section id="dashboardPage"
+                 class="page">
 
             <?!= include('dashboard'); ?>
 
         </section>
 
-        <!-- Booking -->
-
-        <section
-            id="bookingSection"
-            class="page hidden">
+        <section id="bookingPage"
+                 class="page hidden">
 
             <?!= include('booking'); ?>
 
@@ -191,9 +181,8 @@
 
 <!-- Loading -->
 
-<div
-    class="loading"
-    id="loading">
+<div id="loading"
+     class="loading">
 
     <div class="spinner"></div>
 
@@ -201,33 +190,27 @@
 
 <!-- Toast -->
 
-<div
-    class="toast"
-    id="toast">
-
-</div>
+<div id="toast"
+     class="toast"></div>
 
 <!-- Modal -->
 
-<div
-    class="modal-overlay"
-    id="modalOverlay">
+<div class="modal-overlay"
+     id="modalOverlay">
 
     <div class="modal">
 
         <div class="modal-header">
 
-            <div
-                class="modal-title"
-                id="modalTitle">
+            <div class="modal-title"
+                 id="modalTitle">
 
                 Modal
 
             </div>
 
-            <button
-                class="modal-close"
-                onclick="closeModal()">
+            <button class="modal-close"
+                    id="modalClose">
 
                 &times;
 
@@ -235,17 +218,15 @@
 
         </div>
 
-        <div
-            class="modal-body"
-            id="modalBody">
+        <div class="modal-body"
+             id="modalBody">
 
         </div>
 
         <div class="modal-footer">
 
-            <button
-                class="btn btn-light"
-                onclick="closeModal()">
+            <button class="btn btn-light"
+                    id="modalCancel">
 
                 ปิด
 
@@ -256,12 +237,6 @@
     </div>
 
 </div>
-
-<!-- Bootstrap -->
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- JavaScript -->
 
 <?!= include('script'); ?>
 
